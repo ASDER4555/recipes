@@ -1,11 +1,12 @@
 $engine: 3
 $onesync: on
 name: fivemland_recipe
-version: 1.3.0
-author: Csoki&Adam
-description: FiveM Land - ESX Legacy Recipe (Updated)
+version: 1.3.1
+author: Csoki&Adam (fixed by ChatGPT)
+description: FiveM Land - ESX Legacy Clean Recipe (Fixed)
 
 tasks:
+
   - action: download_github
     src: https://github.com/citizenfx/cfx-server-data
     ref: master
@@ -21,83 +22,89 @@ tasks:
     dest: ./resources/[standalone]/bob74_ipl
 
   - action: download_github
-    src: https://github.com/fivemland/recipes
+    src: https://github.com/esx-framework/esx-legacy
     ref: main
-    dest: ./tmp/recipe
+    dest: ./tmp/esx
 
   - action: move_path
-    src: ./tmp/recipe/server.cfg
-    dest: ./server.cfg
+    src: ./tmp/esx
+    dest: ./resources/[esx]
 
-  - action: move_path
-    src: ./tmp/recipe/fivemland.png
-    dest: ./fivemland.png
-
-  - action: connect_database
-
-  - action: download_file
-    url: https://github.com/esx-framework/esx-core/releases/latest/download/esx_core.zip
-    path: ./tmp/esx_core.zip
-  - action: unzip
-    src: ./tmp/esx_core.zip
-    dest: ./tmp/esx_core
-    
-  - action: move_path
-    src: ./tmp/esx_core/esx_core
-    dest: ./tmp/core
-
-  - action: query_database
-    file: ./tmp/core/[SQL]/legacy.sql
+  # ESX alap addonok
+  - action: download_github
+    src: https://github.com/esx-framework/esx_addonaccount
+    ref: main
+    dest: ./resources/[esx]/esx_addonaccount
 
   - action: download_github
-    src: https://github.com/esx-framework/ESX-Legacy-Addons
+    src: https://github.com/esx-framework/esx_addoninventory
     ref: main
-    dest: ./tmp/addons
+    dest: ./resources/[esx]/esx_addoninventory
 
-  - action: move_path
-    src: ./tmp/core/[core]
-    dest: ./resources/[core]
+  - action: download_github
+    src: https://github.com/esx-framework/esx_society
+    ref: main
+    dest: ./resources/[esx]/esx_society
 
-  - action: move_path
-    src: ./tmp/addons/[esx_addons]
-    dest: ./resources/[esx_addons]
+  - action: download_github
+    src: https://github.com/esx-framework/esx_basicneeds
+    ref: main
+    dest: ./resources/[esx]/esx_basicneeds
 
-  - action: remove_path
-    path: ./resources/[core]/esx_inventory
+  # SQL
+  - action: connect_database
 
-  - action: replace_string
-    file: ./resources/[core]/es_extended/shared/config/main.lua
-    search: 'Config.CustomInventory = false'
-    replace: 'Config.CustomInventory = "ox"'
+  - action: query_database
+    file: ./resources/[esx]/esx_society/sql/esx_society.sql
 
+  - action: query_database
+    file: ./resources/[esx]/esx_addonaccount/sql/esx_addonaccount.sql
+
+  - action: query_database
+    file: ./resources/[esx]/esx_addoninventory/sql/esx_addoninventory.sql
+
+  # oxmysql
   - action: download_file
     url: https://github.com/overextended/oxmysql/releases/latest/download/oxmysql.zip
     path: ./tmp/oxmysql.zip
+
   - action: unzip
     src: ./tmp/oxmysql.zip
     dest: ./resources/[ox]
 
-  - action: download_file
-    url: https://github.com/At0mit0s/ox_inventory_redesign/releases/latest/download/ox_inventory.zip
-    path: ./tmp/ox_inventory.zip
-  - action: unzip
-    src: ./tmp/ox_inventory.zip
-    dest: ./resources/[ox]
-
+  # ox_lib
   - action: download_file
     url: https://github.com/overextended/ox_lib/releases/latest/download/ox_lib.zip
     path: ./tmp/ox_lib.zip
+
   - action: unzip
     src: ./tmp/ox_lib.zip
     dest: ./resources/[ox]
 
-  - action: download_github
-    src: https://github.com/overextended/ox_fuel
-    ref: main
-    dest: ./resources/[ox]/ox_fuel
+  # ox_inventory (OFFICIAL)
+  - action: download_file
+    url: https://github.com/overextended/ox_inventory/releases/latest/download/ox_inventory.zip
+    path: ./tmp/ox_inventory.zip
 
+  - action: unzip
+    src: ./tmp/ox_inventory.zip
+    dest: ./resources/[ox]
+
+  # voice
   - action: download_github
-    src: https://github.com/fivemland/illenium-appearance
+    src: https://github.com/AvarianKnight/pma-voice
+    ref: main
+    dest: ./resources/[standalone]/pma-voice
+
+  # screenshot
+  - action: download_github
+    src: https://github.com/project-error/screenshot-basic
+    ref: master
+    dest: ./resources/[standalone]/screenshot-basic
+
+  # appearance
+  - action: download_github
+    src: https://github.com/IlleniumStudios/illenium-appearance
     ref: main
     dest: ./resources/[standalone]/illenium-appearance
 
@@ -105,17 +112,13 @@ tasks:
     file: ./resources/[standalone]/illenium-appearance/sql/management_outfits.sql
 
   - action: query_database
-    file: ./resources/[standalone]/illenium-appearance/sql/player_outfit_codes.sql
-
-  - action: query_database
     file: ./resources/[standalone]/illenium-appearance/sql/player_outfits.sql
 
-  - action: query_database
-    file: ./resources/[standalone]/illenium-appearance/sql/playerskins.sql
-
+  # NPWD
   - action: download_file
     url: https://github.com/project-error/npwd/releases/latest/download/npwd.zip
     path: ./tmp/npwd.zip
+
   - action: unzip
     src: ./tmp/npwd.zip
     dest: ./resources/[standalone]
@@ -123,81 +126,12 @@ tasks:
   - action: query_database
     file: ./resources/[standalone]/npwd/import.sql
 
-  - action: replace_string
-    file: ./resources/[standalone]/npwd/config.json
-    search: '"useResourceIntegration": false'
-    replace: '"useResourceIntegration": true'
-
-  - action: replace_string
-    file: ./resources/[standalone]/npwd/config.json
-    search: '"level": "silly"'
-    replace: '"level": "error"'
-
+  # config fix
   - action: replace_string
     file: ./resources/[standalone]/npwd/config.json
     search: '"defaultLanguage": "en"'
     replace: '"defaultLanguage": "hu"'
 
-  - action: download_github
-    src: https://github.com/AvarianKnight/pma-voice
-    ref: main
-    dest: ./resources/[standalone]/pma-voice
-
-  - action: download_github
-    src: https://github.com/project-error/screenshot-basic
-    ref: master
-    dest: ./resources/[standalone]/screenshot-basic
-
-  - action: download_github
-    src: https://github.com/fivemland/fl_nametag
-    ref: main
-    dest: ./resources/[fivemland]/fl_nametag
-
-  - action: download_github
-    src: https://github.com/fivemland/fl_adminmenu
-    ref: main
-    dest: ./resources/[fivemland]/fl_adminmenu
-
-  - action: download_github
-    src: https://github.com/fivemland/nv_loadingscreen
-    ref: v1.6
-    dest: ./resources/[fivemland]/nv_loadingscreen
-  
-  - action: download_github
-    src: https://github.com/monolith-vision/monolith-clothingmenu
-    ref: main
-    dest: ./resources/[fivemland]/monolith-clothingmenu
-
-  - action: download_github
-    src: https://github.com/fivemland/fl_spectate
-    ref: main
-    dest: ./resources/[fivemland]/fl_spectate
-
-  - action: download_github
-    src: https://github.com/fivemland/fl_punishment
-    ref: main
-    dest: ./resources/[fivemland]/fl_punishment
-
-  - action: download_github
-    src: https://github.com/fivemland/fl_scoreboard
-    ref: main
-    dest: ./resources/[fivemland]/fl_scoreboard
-
+  # cleanup
   - action: remove_path
     path: ./tmp
-  - action: remove_path
-    path: ./resources/[core]/esx_skin
-  - action: remove_path
-    path: ./resources/[core]/skinchanger
-  - action: remove_path
-    path: ./resources/[core]/skinchanger
-  - action: remove_path
-    path: ./resources/[core]/esx_loadingscreen
-  - action: remove_path
-    path: ./resources/[esx_addons]/esx_accessories
-  - action: remove_path
-    path: ./resources/[esx_addons]/esx_barbershop
-  - action: remove_path
-    path: ./resources/[esx_addons]/esx_clotheshop
-  - action: remove_path
-    path: ./resources/[esx_addons]/esx_shops
